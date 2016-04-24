@@ -1,13 +1,20 @@
 import React from 'react';
+import { hashHistory } from 'react-router';
+
+import Tabs from './Tabs';
 
 class Home extends React.Component {
   constructor() {
     super();
   }
+  componentWillMount() {
+    hashHistory.push('/music');
+  }
   render() {
     return (
       <div id="home">
-        <h1>Home</h1>
+        {this.props.children}
+        <Tabs />
       </div>
     );
   }
