@@ -16,7 +16,7 @@ class Home extends React.Component {
     };
   }
   componentWillMount() {
-    hashHistory.push('/music');
+    // hashHistory.push('/music');
 
     let interval = setInterval(() => {
       this.setState({
