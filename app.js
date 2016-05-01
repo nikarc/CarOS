@@ -17,6 +17,8 @@ const files = require('./services/files');
 var mainWindow = null;
 var config;
 
+global.carosRoot = path.resolve(__dirname);
+
 // Quit when all windows are closed.
 app.on('window-all-closed', function() {
   // On OS X it is common for applications and their menu bar
@@ -37,7 +39,7 @@ app.on('ready', function() {
     });
 
     // check if config file
-    let configPath = `${__dirname}/config.json`;
+    let configPath = `${__dirname}/user_settings.json`;
     fs.access(configPath, fs.F_OK, (err) => {
       if (err) {
         console.log(chalk.yellow('No config file, creating now...'));
@@ -88,8 +90,17 @@ app.on('ready', function() {
         'multiSelections'
       ]
     }, (filePaths) => {
-      files.updateUserSettings(filePaths, context);
+      files.updateUserSettings(filePaths, context)
+        .then((done) => {
+          event.sender.send('gotFilePaths', done);
+        }).catch((err) => {
+          if (err) console.error(err);
+        });
     });
+  });
+
+  ipc.on('saveSettings', (event, arg) => {
+    files.updateDB();
   });
 
   // Emitted when the window is closed.
