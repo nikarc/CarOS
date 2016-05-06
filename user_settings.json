@@ -3,5 +3,8 @@
         "music": "/Volumes/THUMBY/Music",
         "podcasts": "/Volumes/THUMBY/Podcasts",
         "videos": []
+    },
+    "database": {
+        "is_setup": true
     }
 }

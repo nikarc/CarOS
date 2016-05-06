@@ -12,7 +12,9 @@ class Settings extends React.Component {
     this.state = {
       settings: settings,
       newSettings: {},
-      loading: false
+      loading: false,
+      filePathsChanged: false,
+      debugString: ''
     };
 
     this.showOpenDialog = this.showOpenDialog.bind(this);
@@ -21,6 +23,12 @@ class Settings extends React.Component {
   showOpenDialog(context) {
     ipc.send('showOpenDialog', context);
     ipc.on('gotFilePaths', (event, doneObject) => {
+      if (doneObject.length > 0) {
+        this.setState({
+          filePathsChanged: true
+        });
+      }
+
       let settingsObj = {};
       settingsObj[doneObject.context] = doneObject.filePaths;
       let newSettings = Object.assign(this.state.settings, settingsObj);
@@ -29,8 +37,20 @@ class Settings extends React.Component {
     });
   }
   saveSettings() {
-    this.setState({ loading: true });
-    ipc.send('saveSettings');
+    let updateDB = false;
+
+    if (this.state.filePathsChanged) {
+      updateDB = true;
+      this.setState({ loading: true });
+    }
+    ipc.send('saveSettings', updateDB);
+    ipc.on('songSaved', (event, doneObj) => {
+      this.state.debugString = doneObj.debugString;
+      if (doneObj.done) {
+        console.log('Done');
+        this.setState({ loading: false });
+      }
+    });
   }
   render() {
     return (
@@ -44,6 +64,7 @@ class Settings extends React.Component {
               <div className="sk-cube4 sk-cube"></div>
               <div className="sk-cube3 sk-cube"></div>
             </div>
+            <pre>{this.state.debugString}</pre>
           </div>
         </div>
         <h1><i className="fa fa-gear"></i>Settings</h1>

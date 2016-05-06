@@ -1,13 +1,16 @@
 'use strict';
 
+const path = require('path');
+global.carosRoot = path.resolve(__dirname);
+
 const electron = require('electron');
 const app = electron.app;  // Module to control application life.
 const BrowserWindow = electron.BrowserWindow;  // Module to create native browser window.
 const ipc = electron.ipcMain;
 const dialog = require('dialog');
-const path = require('path');
 const chalk = require('chalk');
 const fs = require('fs');
+const db = require('./services/database');
 
 // services
 const files = require('./services/files');
@@ -16,8 +19,6 @@ const files = require('./services/files');
 // be closed automatically when the JavaScript object is garbage collected.
 var mainWindow = null;
 var config;
-
-global.carosRoot = path.resolve(__dirname);
 
 // Quit when all windows are closed.
 app.on('window-all-closed', function() {
@@ -48,6 +49,9 @@ app.on('ready', function() {
             music: [],
             podcasts: [],
             videos: []
+          },
+          database: {
+            is_setup: false
           }
         };
 
@@ -94,13 +98,21 @@ app.on('ready', function() {
         .then((done) => {
           event.sender.send('gotFilePaths', done);
         }).catch((err) => {
-          if (err) console.error(err);
+          if (err) console.error(chalk.red('updateUserSettings error: ', err));
         });
     });
   });
 
-  ipc.on('saveSettings', (event, arg) => {
-    files.updateDB();
+  ipc.on('saveSettings', (event, updateDB) => {
+    if (updateDB) {
+      files.updateDB()
+        .then((result, debugString, done) => {
+          console.log('done');
+          event.sender.send('songSaved', {debugString, done});
+        }).catch((err) => {
+          console.error(chalk.red('updateDB error: ' + err));
+        });
+    }
   });
 
   // Emitted when the window is closed.
@@ -109,5 +121,9 @@ app.on('ready', function() {
     // in an array if your app supports multi windows, this is the time
     // when you should delete the corresponding element.
     mainWindow = null;
+  });
+
+  process.on('uncaughtException', function (error) {
+    console.error(chalk.red(error));
   });
 });
