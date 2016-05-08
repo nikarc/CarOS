@@ -187,7 +187,7 @@ $loadingCube: 15px;
 }
 
 #MenuBar {
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   width: 100%;
@@ -269,6 +269,10 @@ $tabsHeight: 60px;
   height: calc(100vh - 60px - 25px);
 }
 
+.view-pane {
+  padding-bottom: 50px;
+}
+
 // Settings
 
 #Settings {
@@ -329,7 +333,44 @@ $tabsHeight: 60px;
 
 // Media
 
+.side-bar {
+  float: left;
+  height: 100%;
+  width: 75px;
+  box-shadow: 0 6px 8px rgba(black, 0.5);
+  position: fixed;
+  top: 25px;
+  left: 0;
+
+  li {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    padding: 1em;
+
+    i {
+      font-size: 2em;
+      margin-bottom: 0.5em;
+    }
+  }
+
+  .cd {
+    background-image: url('../../public/images/cd.png');
+    background-position: center;
+    background-size: contain;
+    width: 24px;
+    height: 24px;
+  }
+}
+
+.view-pane {
+  float: right;
+  width: calc(100% - 75px);
+}
+
 .media-list {
+  list-style: none;
   
   li {
     padding: 1em;
@@ -342,11 +383,11 @@ $tabsHeight: 60px;
       align-items: center;
 
       i {
-        margin-left: 0.75em;
+        margin-left: 0.5em;
       }
 
       span {
-        margin-left: 0.5em;
+        margin-left: 1em;
       }
     }
 
