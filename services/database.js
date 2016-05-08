@@ -78,74 +78,65 @@ let database = {
     return new Promise((resolve, reject) => {
       let dupReg = /(duplicate key value violates unique constraint|already exists)/gi;
 
-      let artist = new Artist({
+      let artist = {
         name: song.artist,
         sort: song.performer_sort
-      });
-      let album = new Album({
+      };
+      let album = {
         title: song.album,
         year: parseInt(song.year),
         image: song.image
-      });
-      let songObj = new Song({
+      };
+      let songObj = {
         path: song.path,
         title: song.title,
         track: parseInt(song.track)
-      });
-      // console.log(chalk.cyan(util.inspect(songObj, { showHidden: false, depth: null })));
+      };
 
-      async.waterfall([
-        (done) => {
-          setTimeout(() => {
-            artist.save().then((artistModel) => {
-              done(null, artistModel);
-            }).catch((err) => {
-              if (dupReg.test(err)) {
-                console.log('dupe');
-              }
-              console.log(chalk.red(err));
-              done(null);
-            });
-          }, 300);
-          
+      async.series([
+        function(done) {
+          new Artist(artist).save().then((artistModel) => {
+            done(null);
+          }).catch((err) => {
+            done(null);
+          });
         },
-        (artistModel, done) => {
-          setTimeout(() => {
-            album.save().then((albumModel) => {
-              albumModel.set('artist_id', artistModel.id);
-              albumModel.save();
+        function(done) {
+          new Album(album).save().then((albumModel) => {
+            console.log(chalk.cyan(artist.name));
+            new Artist({ name: artist.name })
+              .fetch()
+              .then((artistModel) => {
+                albumModel.set('artist_id', artistModel.get('id'));
+                albumModel.save();
 
-              done(null, artistModel, albumModel);
-            }).catch((err) => {
-              if (dupReg.test(err)) {
-                console.log('dupe');
-              }
-              console.log(chalk.red(err));
-              done(null);
-            });
-          }, 300);
-          
+                done(null);   
+              });
+          }).catch((err) => {
+            done(null);
+          });
         },
-        (artistModel, albumModel, done) => {
-          setTimeout(() => {
-            songObj.save().then((songModel) => {
-              songModel.set('artist_id', artistModel.id);
-              songModel.set('album_id', albumModel.id);
+        function(done) {
+          new Song(songObj).save().then((songModel) => {
+            new Album({ title: album.title })
+              .fetch()
+              .then((albumModel) => {
+                new Artist()
+                  .query({ where: { name: artist.name }})
+                  .fetch()
+                  .then((artistModel) => {
+                    songModel.set('artist_id', artistModel.get('id'));
+                    songModel.set('album_id', albumModel.get('id'));
+                    songModel.save();
+                  });
 
-              songModel.save();
-
-              done(null);
-            }).catch((err) => {
-              if (dupReg.test(err)) {
-                console.log('dupe');
-              }
-              console.log(chalk.red(err));
-              done(null);
-            });
-          }, 300);
-          
+                done(null);
+              });
+          }).catch((err) => {
+            done(null);
+          });
         }
-      ], (err) => {
+      ], function(err) {
         resolve();
       });
     });
