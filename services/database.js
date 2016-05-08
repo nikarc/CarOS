@@ -94,13 +94,11 @@ let database = {
       });
       // console.log(chalk.cyan(util.inspect(songObj, { showHidden: false, depth: null })));
 
-      async.series([
+      async.waterfall([
         (done) => {
           setTimeout(() => {
             artist.save().then((artistModel) => {
-              album.artist_id = songObj.artist_id = parseInt(artistModel.id);
-
-              done(null);
+              done(null, artistModel);
             }).catch((err) => {
               if (dupReg.test(err)) {
                 console.log('dupe');
@@ -111,12 +109,13 @@ let database = {
           }, 300);
           
         },
-        (done) => {
+        (artistModel, done) => {
           setTimeout(() => {
             album.save().then((albumModel) => {
-              song.album_id = parseInt(albumModel.id);
+              albumModel.set('artist_id', artistModel.id);
+              albumModel.save();
 
-              done(null);
+              done(null, artistModel, albumModel);
             }).catch((err) => {
               if (dupReg.test(err)) {
                 console.log('dupe');
@@ -127,9 +126,14 @@ let database = {
           }, 300);
           
         },
-        (done) => {
+        (artistModel, albumModel, done) => {
           setTimeout(() => {
             songObj.save().then((songModel) => {
+              songModel.set('artist_id', artistModel.id);
+              songModel.set('album_id', albumModel.id);
+
+              songModel.save();
+
               done(null);
             }).catch((err) => {
               if (dupReg.test(err)) {
