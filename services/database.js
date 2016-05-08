@@ -80,17 +80,20 @@ let database = {
 
       let artist = {
         name: song.artist,
-        sort: song.performer_sort
+        sort: song.performer_sort,
+        mediaType: song.mediaType
       };
       let album = {
         title: song.album,
         year: parseInt(song.year),
-        image: song.image
+        image: song.image,
+        mediaType: song.mediaType
       };
       let songObj = {
         path: song.path,
         title: song.title,
-        track: parseInt(song.track)
+        track: parseInt(song.track),
+        mediaType: song.mediaType
       };
 
       async.series([
@@ -138,6 +141,47 @@ let database = {
       ], function(err) {
         resolve();
       });
+    });
+  },
+  fetchDB: function(event, mediaType) {
+    async.parallel([
+      (done) => {
+        new Artist({ mediaType })
+          .fetchAll()
+          .then((result) => {
+            done(null, result.models);
+          }).catch((err) => {
+            done(err);
+          });
+      },
+      (done) => {
+        new Album({ mediaType })
+          .fetchAll()
+          .then((result) => {
+            done(null, result.models);
+          }).catch((err) => {
+            done(err);
+          });
+      },
+      (done) => {
+        new Song({ mediaType })
+          .fetchAll()
+          .then((result) => {
+            done(null, result.models);
+          }).catch((err) => {
+            done(err);
+          });
+      }
+    ], (err, results) => {
+      if (err) console.log(chalk.red(err));
+
+      let media = {
+        artists: results[0],
+        albums: results[1],
+        songs: results[2]
+      };
+
+      event.sender.send('fetchDBResults', media);
     });
   }
 };

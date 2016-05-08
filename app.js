@@ -110,6 +110,10 @@ app.on('ready', function() {
     }
   });
 
+  ipc.on('fetchDB', (event, arg) => {
+    db.fetchDB(event, arg);
+  });
+
   // Emitted when the window is closed.
   mainWindow.on('closed', function() {
     // Dereference the window object, usually you would store windows
