@@ -16,6 +16,7 @@
     "electron-prebuilt": "^0.37.7",
     "id3-parser": "^1.0.1",
     "knex": "^0.10.0",
+    "lodash": "^4.11.2",
     "moment": "^2.13.0",
     "pg": "^4.5.5",
     "react": "^15.0.1",
