@@ -106,13 +106,7 @@ app.on('ready', function() {
 
   ipc.on('saveSettings', (event, updateDB) => {
     if (updateDB) {
-      files.updateDB()
-        .then((debugString, done) => {
-          console.log('done');
-          event.sender.send('songSaved', {debugString, done});
-        }).catch((err) => {
-          console.error(chalk.red('updateDB error: ' + err));
-        });
+      files.updateDB(event);
     }
   });
 

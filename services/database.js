@@ -103,7 +103,6 @@ let database = {
         },
         function(done) {
           new Album(album).save().then((albumModel) => {
-            console.log(chalk.cyan(artist.name));
             new Artist({ name: artist.name })
               .fetch()
               .then((artistModel) => {

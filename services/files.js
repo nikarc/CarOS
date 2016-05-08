@@ -31,7 +31,7 @@ module.exports = {
       }
     });
   },
-  updateDB: function() {
+  updateDB: function(event) {
     return new Promise((resolve, reject) => {
         let filePaths = require(path.join(carosRoot, 'user_settings.json')).files;
         let fileCount = 0, savedCount = 0;
@@ -42,7 +42,6 @@ module.exports = {
           walker.on('file', (root, fileStats, next) => {
             if (!fileRegs.exclude.test(fileStats.name)) {
 
-              fileCount++;
               let songPath = path.resolve(root, fileStats.name);
 
               fs.readFile(songPath, (err, file) => {
@@ -50,6 +49,7 @@ module.exports = {
 
                 id3.parse(file).then((tags) => {
                   if (tags && tags.artist && tags.album && tags.title) {
+                    fileCount++;
                     let debugString = `Attempting to save ${tags.artist} - ${tags.album}: ${tags.title}`;
                     console.log(chalk.yellow(debugString));
                     let imagePath = path.resolve(carosRoot, 'public', 'images', 'album_art', `${tags.artist} - ${tags.album}.jpg`);
@@ -88,7 +88,7 @@ module.exports = {
                           done = true;
                         }
 
-                        resolve(debugString, done);
+                        event.sender.send('songSaved', done);
                       }).catch((err) => {
                         // if (err) console.log(err);
                       });
@@ -98,10 +98,6 @@ module.exports = {
             }
 
             next();
-          });
-
-          walker.on('end', () => {
-            resolve();
           });
         }
     });

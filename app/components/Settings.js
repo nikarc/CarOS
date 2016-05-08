@@ -44,10 +44,8 @@ class Settings extends React.Component {
       this.setState({ loading: true });
     }
     ipc.send('saveSettings', updateDB);
-    ipc.on('songSaved', (event, doneObj) => {
-      console.log(doneObj.done);
-      this.state.debugString = doneObj.debugString;
-      if (doneObj.done) {
+    ipc.on('songSaved', (event, done) => {
+      if (done) {
         this.setState({ loading: false });
       }
     });
