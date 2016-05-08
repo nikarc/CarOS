@@ -146,7 +146,8 @@ let database = {
   fetchDB: function(event, mediaType) {
     async.parallel([
       (done) => {
-        new Artist({ mediaType })
+        new Artist()
+          .query({ where: { mediaType: mediaType }})
           .fetchAll()
           .then((result) => {
             done(null, result.models);
@@ -155,7 +156,8 @@ let database = {
           });
       },
       (done) => {
-        new Album({ mediaType })
+        new Album()
+          .query({ where: { mediaType: mediaType }})
           .fetchAll()
           .then((result) => {
             done(null, result.models);
@@ -164,7 +166,8 @@ let database = {
           });
       },
       (done) => {
-        new Song({ mediaType })
+        new Song()
+          .query({ where: { mediaType: mediaType }})
           .fetchAll()
           .then((result) => {
             done(null, result.models);

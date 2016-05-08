@@ -16,8 +16,6 @@ class Home extends React.Component {
     };
   }
   componentWillMount() {
-    // hashHistory.push('/music');
-
     let interval = setInterval(() => {
       this.setState({
         time: moment().format('MMM Do YY - hh:mm a')

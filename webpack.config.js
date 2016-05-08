@@ -17,7 +17,7 @@ module.exports = {
         }
       },
       { test: /\.scss$/, loader: 'style-loader!css-loader!sass-loader' },
-      { test: /\.(png|woff|woff2|eot|ttf|svg|jpg|gif)$/, loader: 'url-loader?limit=100000' },
+      { test: /\.(png|woff|woff2|eot|ttf|svg|jpg|gif|otf)$/, loader: 'url-loader?limit=100000' },
       { test: /\.json$/, loader: 'json-loader' }
     ]
   }

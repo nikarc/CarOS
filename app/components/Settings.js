@@ -13,8 +13,7 @@ class Settings extends React.Component {
       settings: settings,
       newSettings: {},
       loading: false,
-      filePathsChanged: false,
-      debugString: ''
+      filePathsChanged: false
     };
 
     this.showOpenDialog = this.showOpenDialog.bind(this);
