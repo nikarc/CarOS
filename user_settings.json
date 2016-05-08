@@ -5,6 +5,6 @@
         "videos": []
     },
     "database": {
-        "is_setup": true
+        "is_setup": false
     }
 }

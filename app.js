@@ -2,6 +2,7 @@
 
 const path = require('path');
 global.carosRoot = path.resolve(__dirname);
+process.env.NODE_PATH = '/usr/local/bin/node';
 
 const electron = require('electron');
 const app = electron.app;  // Module to control application life.
@@ -11,6 +12,7 @@ const dialog = require('dialog');
 const chalk = require('chalk');
 const fs = require('fs');
 const db = require('./services/database');
+var configPath = `${__dirname}/user_settings.json`;
 
 // services
 const files = require('./services/files');
@@ -18,7 +20,7 @@ const files = require('./services/files');
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 var mainWindow = null;
-var config;
+var config = require(configPath);
 
 // Quit when all windows are closed.
 app.on('window-all-closed', function() {
@@ -40,7 +42,6 @@ app.on('ready', function() {
     });
 
     // check if config file
-    let configPath = `${__dirname}/user_settings.json`;
     fs.access(configPath, fs.F_OK, (err) => {
       if (err) {
         console.log(chalk.yellow('No config file, creating now...'));
@@ -106,7 +107,7 @@ app.on('ready', function() {
   ipc.on('saveSettings', (event, updateDB) => {
     if (updateDB) {
       files.updateDB()
-        .then((result, debugString, done) => {
+        .then((debugString, done) => {
           console.log('done');
           event.sender.send('songSaved', {debugString, done});
         }).catch((err) => {
