@@ -105,6 +105,16 @@ class Music extends React.Component {
         </li>
       );
     });
+
+    // all songs
+    let songSort = _.sortBy(this.state.songs, (s) => { return s.attributes.title; });
+    let allSongs = songSort.map((song, index) => {
+      let artist = _.filter(this.state.artists, (a) => { return a.attributes.id === song.attributes.artist_id; })[0];
+      return (
+        <li key={index} className="item-list"><div>{song.attributes.title} - <small>{artist.attributes.name}</small></div></li>
+      );
+    });
+
     return (
       <div id="music" className="view">
         <SideBar options={['artists', 'albums', 'songs']} changeContext={this.changeContext} context={this.state.context} media={this.state.media} mediaGoBack={this.mediaGoBack} />
@@ -125,6 +135,19 @@ class Music extends React.Component {
                 <div id="all-albums" className="view-pane"><ul className="media-list">{albumList}</ul></div>
                 <div id="all-albums-songs" className="view-pane">
                   <ul className="album-list">{albums}</ul>
+                </div>
+              </div>
+            );
+          }
+        }).call(this)}
+        {(function() {
+          if (this.state.context === 'songs') {
+            return (
+              <div className={'slide ' + this.state.media.type} style={this.state.context === 'album-songs' ? {display: 'none'} : {}}>
+                <div id="all-songs" className="view-pane">
+                  <ul className="media-list">
+                    {allSongs}
+                  </ul>
                 </div>
               </div>
             );

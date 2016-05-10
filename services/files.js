@@ -67,6 +67,7 @@ module.exports = {
 
                     // create album art
                     // TODO: stop app from closing before completing album creation
+                    // TODO: encodeURIComponent on filename ONLY
                     if (tags.image && tags.image.data) {
                       fs.access(imagePath, fs.F_OK, (err) => {
                         if (err) {
