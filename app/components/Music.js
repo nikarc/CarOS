@@ -20,6 +20,7 @@ class Music extends React.Component {
     };
 
     this.changeContext = this.changeContext.bind(this);
+    this.mediaGoBack = this.mediaGoBack.bind(this);
   }
   componentWillMount() {
     ipc.send('fetchDB', 'music');
@@ -48,35 +49,55 @@ class Music extends React.Component {
     this.setState({context});
   }
   pickMedia(newMedia) {
-    console.log(newMedia);
     this.setState({
       media: newMedia
     });
   }
+  mediaGoBack() {
+    let newState = Object.assign(this.state.media, {type: 'artists'});
+    this.setState(newState);
+  }
   render() {
     let self = this;
     let artists = this.state.artists.sort((a,b) => {return util.perfSort(a,b);}).map((artist, index) => {
-      return <li key={index} onClick={this.pickMedia.bind(this, {id: artist.attributes.id, type: 'albums'})}>{artist.attributes.name} <div className="song-details"><span>{self.albumCount.call(self, artist.attributes.id)}</span><i><img src="../public/images/cd.png"/></i><span>{self.songCount.call(this, artist.attributes.id)}</span><i className="fa fa-music"></i></div></li>;
+      return <li key={index} className="item-list" onClick={this.pickMedia.bind(this, {id: artist.attributes.id, type: 'albums', name: artist.attributes.name})}>
+                <span>{artist.attributes.name}</span>
+                <div className="song-details">
+                  <div className="each">
+                    <span>{self.albumCount.call(self, artist.attributes.id)}</span>
+                    <i><img src="../public/images/cd.png"/></i></div><div className="each">
+                    <span>{self.songCount.call(this, artist.attributes.id)}</span>
+                    <i className="fa fa-music"></i>
+                  </div>
+                </div>
+              </li>;
     });
-    let albums = _.sortBy(this.state.albums, (a) => { return a.attributes.year; }).map((album, index) => {
+    let albumSort = _.sortBy(this.state.albums, (a) => { return a.attributes.year; });
+    let albums = _.filter(albumSort, (al) => { return al.attributes.artist_id === self.state.media.id; }).map((album, index) => {
+      let songs = _.filter(_.sortBy(this.state.songs, (s) => { return s.attributes.track; }), (s) => { return s.attributes.album_id === album.attributes.id; }).map((song, songIndex) => {
+        return  <li key={songIndex}>{songIndex + 1}  |  {song.attributes.title}</li>;
+      });
       return (
         <li key={index} onClick={this.pickMedia.bind(this, {id: album.attributes.id, type: 'songs'})}>
-          <div className="album-art">
-            <img src={album.attributes.image}/>
+          <div className="album-info">
+            <div className="album-art">
+              <img src={album.attributes.image}/>
+            </div>
+            <div>
+              <h1>{this.state.media.name}</h1>
+              <h3>{album.attributes.title}</h3>
+            </div>
           </div>
-          {album.attributes.name}
-        </li>);
-    });
-    let songs = this.state.songs.sort((a,b) => { return a.attributes.title - b.attributes.title; }).map((song, index) => {
-      return <li key={index}>{song.attributes.title} - {song.attributes.artist}</li>;
+          <ul className="album-songlist">{songs}</ul>
+        </li>
+      );
     });
     return (
       <div id="music" className="view">
-        <SideBar options={['artists', 'albums', 'songs']} changeContext={this.changeContext} context={this.state.context} media={this.state.media} />
+        <SideBar options={['artists', 'albums', 'songs']} changeContext={this.changeContext} context={this.state.context} media={this.state.media} mediaGoBack={this.mediaGoBack} />
         <div className={'slide ' + this.state.media.type}>
           <div id="artists" className="view-pane"><ul className="media-list">{artists}</ul></div>
-          <div id="albums" className="view-pane"><ul className="media-list">{albums}</ul></div>
-          <div id="songs" className="view-pane"><ul className="media-list">{songs}</ul></div>
+          <div id="albums" className="view-pane"><ul className="album-list">{albums}</ul></div>
         </div>
       </div>
     );
@@ -84,3 +105,5 @@ class Music extends React.Component {
 }
 
 export default Music;
+
+

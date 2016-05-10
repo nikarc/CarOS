@@ -31,7 +31,7 @@ class SideBar extends React.Component {
             <div className="side-bar">
                 <ul>
                     {options}
-                    <li className="back-button" style={this.props.media.type === 'artists' ? {opacity: '0'} : {opacity: '1'}}>
+                    <li className="back-button" style={this.props.media.type === 'artists' ? {opacity: '0'} : {opacity: '1'}} onClick={this.props.mediaGoBack.bind(this)}>
                         <i className="fa fa-chevron-left"></i>
                         <span>Back</span>
                     </li>

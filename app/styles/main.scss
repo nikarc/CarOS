@@ -1,5 +1,4 @@
 @import './font-awesome/scss/font-awesome.scss';
-@import './_animations.scss';
 
 @font-face {
   font-family: 'FontAwesome';
@@ -271,14 +270,14 @@ $tabsHeight: 60px;
 #home {
   padding: 25px 0 0 0;
   height: calc(100% - 60px);
-  /*overflow-x: hidden;*/
+  overflow: hidden;
 }
 
 .view {
   height: calc(100vh - 60px - 25px);
 
   &#music {
-    width: 300%;
+    width: 200%;
   }
 }
 
@@ -400,10 +399,12 @@ $tabsHeight: 60px;
 
 .view-pane {
   float: left;
-  padding-bottom: 50px;
+  padding-bottom: 150px;
   width: calc(100vw - 75px);
   background-color: $darkGray;
   transition: all 0.2s;
+  height: 100vh;
+  overflow-y: scroll;
 
   &:nth-child(1) {
     margin-left: 75px;
@@ -419,18 +420,34 @@ $tabsHeight: 60px;
 .media-list {
   list-style: none;
   
-  li {
-    padding: 1em;
+  .item-list {
+    /*padding: 1em;*/
     border-bottom: 1px solid lighten($darkGray, 10%);
+    height: 50px;
+    padding: 0 1em;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 
     .song-details {
       float: right;
       display: inline-flex;
       justify-content: center;
       align-items: center;
+      height: 100%;
+
+      .each {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
 
       i {
         margin-left: 0.5em;
+        font-size: 18px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
       }
 
       span {
@@ -439,15 +456,40 @@ $tabsHeight: 60px;
     }
 
     img {
-      width: 18px;
+      height: 18px;
     }
   }
 }
 
-.album-art {
-  width: 50px;
+.album-list {
+
+  .album-art {
+      display: inline-block;
+      margin-right: 1em;
+
+      img {
+        width: 250px;
+      }
+    }
+
+  li {
+    padding: 1em;
+    border-bottom: 1px solid lighten($darkGray, 10%);
+  }
 }
 
+.album-info {
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid lighten($darkGray, 10%);
+  padding-bottom: 1.5em;
 
+  h1, h3 {
+    font-weight: 100;
+  }
+}
 
+.album-songlist {
+  list-style: none;
+}
 
