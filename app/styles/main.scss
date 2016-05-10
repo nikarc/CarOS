@@ -357,6 +357,10 @@ $tabsHeight: 60px;
   &.songs > #songs {
     transform: translateX(-200%);
   }
+
+  &.album-songs > #all-albums-songs {
+    transform: translateX(-100%); 
+  }
 }
 
 .side-bar {

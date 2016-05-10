@@ -59,6 +59,7 @@ class Music extends React.Component {
   }
   render() {
     let self = this;
+    // all artists
     let artists = this.state.artists.sort((a,b) => {return util.perfSort(a,b);}).map((artist, index) => {
       return <li key={index} className="item-list" onClick={this.pickMedia.bind(this, {id: artist.attributes.id, type: 'albums', name: artist.attributes.name})}>
                 <span>{artist.attributes.name}</span>
@@ -72,7 +73,8 @@ class Music extends React.Component {
                 </div>
               </li>;
     });
-    let albums = _.filter(_.sortBy(this.state.albums, (a) => { return a.attributes.year; }), (al) => { return al.attributes.artist_id === self.state.media.id; }).map((album, index) => {
+    // artist albums or single album
+    let albums = _.filter(_.sortBy(this.state.albums, (a) => { return a.attributes.year; }), (al) => { return al.attributes.artist_id === self.state.media.id || al.attributes.id === self.state.media.id; }).map((album, index) => {
       let songs = _.filter(_.sortBy(this.state.songs, (s) => { return s.attributes.track; }), (s) => { return s.attributes.album_id === album.attributes.id; }).map((song, songIndex) => {
         return  <li key={songIndex}>{songIndex + 1}  |  {song.attributes.title}</li>;
       });
@@ -91,11 +93,13 @@ class Music extends React.Component {
         </li>
       );
     });
-    // let albumList = [];
+
+    // all albums
     let albumList = this.state.albums.map((al, albumIndex) => {
+      let artist = _.filter(this.state.artists, (a) => { return a.attributes.id === al.attributes.artist_id; });
       return (
         <li key={albumIndex} style={al.attributes.image.length > 0 ? {} : {display: 'none'}}>
-          <div className="all-album-art">
+          <div className="all-album-art" onClick={this.pickMedia.bind(this, {id: al.attributes.id, type: 'album-songs', name: artist[0].attributes.name})}>
             <img src={al.attributes.image} />
           </div>
         </li>
@@ -117,8 +121,11 @@ class Music extends React.Component {
         {(function() {
           if (this.state.context === 'albums') {
             return (
-              <div className={'slide ' + this.state.media.type} style={this.state.context === 'albums' ? {} : {display: 'none'}}>
+              <div className={'slide ' + this.state.media.type} style={this.state.context === 'album-songs' ? {display: 'none'} : {}}>
                 <div id="all-albums" className="view-pane"><ul className="media-list">{albumList}</ul></div>
+                <div id="all-albums-songs" className="view-pane">
+                  <ul className="album-list">{albums}</ul>
+                </div>
               </div>
             );
           }
