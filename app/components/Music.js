@@ -72,8 +72,7 @@ class Music extends React.Component {
                 </div>
               </li>;
     });
-    let albumSort = _.sortBy(this.state.albums, (a) => { return a.attributes.year; });
-    let albums = _.filter(albumSort, (al) => { return al.attributes.artist_id === self.state.media.id; }).map((album, index) => {
+    let albums = _.filter(_.sortBy(this.state.albums, (a) => { return a.attributes.year; }), (al) => { return al.attributes.artist_id === self.state.media.id; }).map((album, index) => {
       let songs = _.filter(_.sortBy(this.state.songs, (s) => { return s.attributes.track; }), (s) => { return s.attributes.album_id === album.attributes.id; }).map((song, songIndex) => {
         return  <li key={songIndex}>{songIndex + 1}  |  {song.attributes.title}</li>;
       });
@@ -92,13 +91,38 @@ class Music extends React.Component {
         </li>
       );
     });
+    // let albumList = [];
+    let albumList = this.state.albums.map((al, albumIndex) => {
+      return (
+        <li key={albumIndex} style={al.attributes.image.length > 0 ? {} : {display: 'none'}}>
+          <div className="all-album-art">
+            <img src={al.attributes.image} />
+          </div>
+        </li>
+      );
+    });
     return (
       <div id="music" className="view">
         <SideBar options={['artists', 'albums', 'songs']} changeContext={this.changeContext} context={this.state.context} media={this.state.media} mediaGoBack={this.mediaGoBack} />
-        <div className={'slide ' + this.state.media.type}>
-          <div id="artists" className="view-pane"><ul className="media-list">{artists}</ul></div>
-          <div id="albums" className="view-pane"><ul className="album-list">{albums}</ul></div>
-        </div>
+        {(function() {
+          if (this.state.context === 'artists') {
+            return (
+              <div className={'slide ' + this.state.media.type} style={this.state.context === 'artists' ? {} : {display: 'none'}}>
+                <div id="artists" className="view-pane"><ul className="media-list">{artists}</ul></div>
+                <div id="albums" className="view-pane"><ul className="album-list">{albums}</ul></div>
+              </div>
+            );
+          }
+        }).call(this)}
+        {(function() {
+          if (this.state.context === 'albums') {
+            return (
+              <div className={'slide ' + this.state.media.type} style={this.state.context === 'albums' ? {} : {display: 'none'}}>
+                <div id="all-albums" className="view-pane"><ul className="media-list">{albumList}</ul></div>
+              </div>
+            );
+          }
+        }).call(this)}
       </div>
     );
   }

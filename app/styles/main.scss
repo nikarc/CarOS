@@ -493,3 +493,26 @@ $tabsHeight: 60px;
   list-style: none;
 }
 
+#all-albums {
+
+  .media-list {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+
+    li {
+      width: calc(99% / 3);
+
+      img {
+        width: 100%;
+      }
+    }
+  }
+}
+
+
+.clearfix::after {
+  content: "";
+  display: table;
+  clear: both;
+}
