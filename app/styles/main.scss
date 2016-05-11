@@ -210,6 +210,9 @@ $tabsHeight: 60px;
   height: $tabsHeight;
   background: $gradient;
   z-index: 1000;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 
   ul {
     list-style: none;
@@ -217,7 +220,9 @@ $tabsHeight: 60px;
     justify-content: center;
     align-items: center;
     height: 100%;
-    padding: 0 200px;
+    /*margin-right: 1em;*/
+    /*padding: 0 200px;*/
+    flex-grow: 1.5;
 
     a {
       height: 100%;
@@ -263,6 +268,83 @@ $tabsHeight: 60px;
 
 .back-button {
   transition: all 0.2s;
+}
+
+#mediaPlayer {
+  flex-grow: 4;
+
+  i {
+    height: 60px;
+    width: 60px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    /*&:not(:last-child) {
+      margin-right: 18px;
+    }*/
+
+    &.fa-play {
+      font-size: 24px;
+      border-right: 1px solid rgba(white, 0.5);
+      border-left: 1px solid rgba(white, 0.5);
+      /*margin-right: 15px;*/
+    }
+    &.fa-backward {
+      border-left: 1px solid rgba(white, 0.5);
+    }
+    &.fa-forward {
+      border-right: 1px solid rgba(white, 0.5);
+    }
+    &:not(.fa-play) {
+      font-size: 18px;
+    }
+  }
+}
+
+#controls {
+  display: flex;
+  align-items: center;
+}
+
+#buttons {
+  flex-grow: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#scrubber {
+  flex-grow: 4;
+  height: 60px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  input {
+    width: 90%;
+    -webkit-appearance: none;
+
+    &::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      background-color: white;
+      background: linear-gradient(#ccc, white);
+      height: 18px;
+      width: 18px;
+      border: 4px solid white;
+      margin-top: -7px;
+      border-radius: 50%;
+    }
+
+    &::-webkit-slider-runnable-track {
+      background-color: rgba(white, 0.5);
+      height: 3px;
+    }
+
+    &:focus {
+      outline: none;
+    }
+  }
 }
 
 // Home

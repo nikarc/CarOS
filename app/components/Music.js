@@ -2,10 +2,13 @@ import React from 'react';
 
 import Tabs from './Tabs';
 import SideBar from './SideBar';
+import MediaPlayer from '../services/MediaPlayer.js';
 
 const ipc = electron.ipcRenderer;
 const util = require('../util/util.js');
 const _ = require('lodash');
+
+let mediaPlayer;
 
 class Music extends React.Component {
   constructor() {
@@ -26,6 +29,8 @@ class Music extends React.Component {
     ipc.send('fetchDB', 'music');
     ipc.on('fetchDBResults', (event, results) => {
       let newState = Object.assign(this.state, results);
+
+      mediaPlayer = MediaPlayer(newState.songs, newState.albums, newState.artists);
 
       console.log(results);
       this.setState(newState);
@@ -57,6 +62,9 @@ class Music extends React.Component {
     let newState = Object.assign(this.state.media, {type: 'artists'});
     this.setState(newState);
   }
+  playSong(song, album) {
+    mediaPlayer.playSong(song, album);
+  }
   render() {
     let self = this;
     // all artists
@@ -76,7 +84,7 @@ class Music extends React.Component {
     // artist albums or single album
     let albums = _.filter(_.sortBy(this.state.albums, (a) => { return a.attributes.year; }), (al) => { return al.attributes.artist_id === self.state.media.id || al.attributes.id === self.state.media.id; }).map((album, index) => {
       let songs = _.filter(_.sortBy(this.state.songs, (s) => { return s.attributes.track; }), (s) => { return s.attributes.album_id === album.attributes.id; }).map((song, songIndex) => {
-        return  <li key={songIndex}>{songIndex + 1}  |  {song.attributes.title}</li>;
+        return  <li key={songIndex} onClick={this.playSong.bind(this, song.attributes, album.attributes)}>{songIndex + 1}  |  {song.attributes.title}</li>;
       });
       return (
         <li key={index} onClick={this.pickMedia.bind(this, {id: album.attributes.id, type: 'songs'})}>
@@ -121,7 +129,7 @@ class Music extends React.Component {
         {(function() {
           if (this.state.context === 'artists') {
             return (
-              <div className={'slide ' + this.state.media.type} style={this.state.context === 'artists' ? {} : {display: 'none'}}>
+              <div className={'slide ' + this.state.media.type}>
                 <div id="artists" className="view-pane"><ul className="media-list">{artists}</ul></div>
                 <div id="albums" className="view-pane"><ul className="album-list">{albums}</ul></div>
               </div>
@@ -131,7 +139,7 @@ class Music extends React.Component {
         {(function() {
           if (this.state.context === 'albums') {
             return (
-              <div className={'slide ' + this.state.media.type} style={this.state.context === 'album-songs' ? {display: 'none'} : {}}>
+              <div className={'slide ' + this.state.media.type}>
                 <div id="all-albums" className="view-pane"><ul className="media-list">{albumList}</ul></div>
                 <div id="all-albums-songs" className="view-pane">
                   <ul className="album-list">{albums}</ul>
@@ -143,7 +151,7 @@ class Music extends React.Component {
         {(function() {
           if (this.state.context === 'songs') {
             return (
-              <div className={'slide ' + this.state.media.type} style={this.state.context === 'album-songs' ? {display: 'none'} : {}}>
+              <div className={'slide ' + this.state.media.type}>
                 <div id="all-songs" className="view-pane">
                   <ul className="media-list">
                     {allSongs}
@@ -160,4 +168,7 @@ class Music extends React.Component {
 
 export default Music;
 
+ // style={this.state.context === 'artists' ? {} : {display: 'none'}}
+ // style={this.state.context === 'album-songs' ? {display: 'none'} : {}}
+ // style={this.state.context === 'album-songs' ? {display: 'none'} : {}}
 
