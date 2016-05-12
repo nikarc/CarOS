@@ -14,7 +14,7 @@ class MediaPlayer extends React.Component {
             currentPosition: 1,
             duration: 2,
             shouldChange: false,
-            thumbPos: 0
+            thumbPos: -9
         };
 
         this.mouseDown = this.mouseDown.bind(this);
@@ -39,14 +39,17 @@ class MediaPlayer extends React.Component {
         this.state.shouldChange = true;
     }
     drag(e) {
+        // TODO: 
+        // * figure out the time in seconds relative to thumb position in div
+        // * pass time to media player to change position in song
         if (this.state.shouldChange) {
             let offset = $('#track').offset();
             let width = $('#track').width();
 
             let pos = e.pageX - offset.left;
-            if (pos < 0) {
+            if (pos < -9) {
                 this.setState({
-                    thumbPos: '0px'
+                    thumbPos: '-9px'
                 });
             } else if (pos > (width - 9)) {
                 this.setState({
@@ -60,7 +63,6 @@ class MediaPlayer extends React.Component {
         }
     }
     mouseUp() {
-        console.log('should not change');
         this.state.shouldChange = false;
     }
     addTrackEvent() {
