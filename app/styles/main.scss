@@ -201,12 +201,13 @@ $loadingCube: 15px;
 }
 
 $tabsHeight: 60px;
+$transSpeed: 0.4s;
 
 #tabs {
   position: fixed;
   bottom: 0;
   left: 0;
-  width: 100%;
+  width: 140%;
   height: $tabsHeight;
   background: $gradient;
   z-index: 1000;
@@ -222,7 +223,12 @@ $tabsHeight: 60px;
     height: 100%;
     /*margin-right: 1em;*/
     /*padding: 0 200px;*/
-    flex-grow: 1.5;
+    transition: all $transSpeed;
+    flex-grow: 1;
+
+    &.playing {
+      flex-grow: 3;
+    }
 
     a {
       height: 100%;
@@ -271,7 +277,13 @@ $tabsHeight: 60px;
 }
 
 #mediaPlayer {
-  flex-grow: 4;
+  transition: $transSpeed;
+  flex-grow: 0.001;
+
+  &.playing {
+    flex-grow: 4;
+    margin-right: 27%;
+  }
 
   i {
     height: 60px;
@@ -284,7 +296,7 @@ $tabsHeight: 60px;
       margin-right: 18px;
     }*/
 
-    &.fa-play {
+    &.fa-play, &.fa-pause {
       font-size: 24px;
       border-right: 1px solid rgba(white, 0.5);
       border-left: 1px solid rgba(white, 0.5);

@@ -1,5 +1,10 @@
 const _ = require('lodash');
 
+import EventEmitter from 'wolfy87-eventemitter';
+
+// const ee = new EventEmitter();
+console.log(ee);
+
 module.exports = function(songs, albums, artists) {
     return {
         media: {
@@ -16,7 +21,10 @@ module.exports = function(songs, albums, artists) {
         song: null,
         songList: [],
         play: function() {
-            
+            this.song.play();
+
+            console.log('emitting event');
+            ee.emitEvent('playing');
         },
         pause: function() {
             
@@ -28,22 +36,20 @@ module.exports = function(songs, albums, artists) {
             
         },
         playSong: function(song, album) {
-            console.log(song.path);
             this.song = new Audio(song.path);
             this.song.addEventListener('loadedmetadata', () => {
-                console.log(this.song);
                 this.songData = Object.assign(this.songData, song);
                 this.songData.length = this.song.duration; 
             });
 
-            this.song.play();
+            this.play();
 
             // need to filter by array of songs from album ^
             this.songList = _.filter(_.sortBy(this.media.songs.slice(song.track), (sort) => { return sort.attributes.track; }), (s) => {
                return s.attributes.album_id === album.id; 
             });
 
-            console.log(this.songList);
+            // console.log(this.songList);
         }
     };
 };

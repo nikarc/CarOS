@@ -2,9 +2,13 @@ import React from 'react';
 import { hashHistory } from 'react-router';
 
 import moment from 'moment';
+import EventEmitter from 'wolfy87-eventemitter';
 
 import Tabs from './Tabs';
 import MenuBar from './MenuBar';
+
+const ee = new EventEmitter();
+window.ee = ee;
 
 class Home extends React.Component {
   constructor() {
@@ -12,10 +16,12 @@ class Home extends React.Component {
 
     this.state = {
       time: null,
-      timeInterval: null
+      timeInterval: null,
+      playing: false
     };
   }
   componentWillMount() {
+    let self = this;
     let interval = setInterval(() => {
       this.setState({
         time: moment().format('MMM Do YY - hh:mm a')
@@ -25,6 +31,13 @@ class Home extends React.Component {
     this.setState({
       timeInterval: interval
     });
+
+    ee.addListener('playing', () => {
+      console.log('song playing');
+      self.setState({
+        playing: true
+      });
+    });
   }
   render() {
     const childrenWithProps = React.Children.map(this.props.children, (child) => React.cloneElement(child, { time: this.state.time }));
@@ -32,7 +45,7 @@ class Home extends React.Component {
       <div id="home">
         <MenuBar time={this.state.time} />
         {childrenWithProps}
-        <Tabs />
+        <Tabs playing={this.state.playing} />
       </div>
     );
   }
