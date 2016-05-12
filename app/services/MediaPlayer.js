@@ -1,10 +1,5 @@
 const _ = require('lodash');
 
-import EventEmitter from 'wolfy87-eventemitter';
-
-// const ee = new EventEmitter();
-console.log(ee);
-
 module.exports = function(songs, albums, artists) {
     return {
         media: {
@@ -20,10 +15,19 @@ module.exports = function(songs, albums, artists) {
         },
         song: null,
         songList: [],
+        positionCounter: function() {
+            if (this.songData.length > 0 && this.songData.currentPos !== this.songData.length) {
+                this.songData.currentPos++;
+                ee.emitEvent('position', [this.songData.currentPos]);
+
+                setTimeout(() => {
+                    return this.positionCounter(); 
+                }, 1000);
+            }
+        },
         play: function() {
             this.song.play();
 
-            console.log('emitting event');
             ee.emitEvent('playing');
         },
         pause: function() {
@@ -35,11 +39,17 @@ module.exports = function(songs, albums, artists) {
         previous: function() {
             
         },
+        scrub(pos) {
+            this.song.currentTime = pos;
+        },
         playSong: function(song, album) {
             this.song = new Audio(song.path);
             this.song.addEventListener('loadedmetadata', () => {
                 this.songData = Object.assign(this.songData, song);
-                this.songData.length = this.song.duration; 
+                this.songData.length = Math.floor(this.song.duration);
+                ee.emitEvent('duration', [this.songData.length]);
+
+                this.positionCounter();
             });
 
             this.play();
