@@ -41,9 +41,22 @@ class MediaPlayer extends React.Component {
     drag(e) {
         if (this.state.shouldChange) {
             let offset = $('#track').offset();
-            this.setState({
-                thumbPos: e.pageX - offset.left
-            });
+            let width = $('#track').width();
+
+            let pos = e.pageX - offset.left;
+            if (pos < 0) {
+                this.setState({
+                    thumbPos: '0px'
+                });
+            } else if (pos > (width - 9)) {
+                this.setState({
+                    thumbPos: (width - 9) + 'px'
+                });
+            } else {
+                this.setState({
+                    thumbPos: pos + 'px'
+                });
+            }
         }
     }
     mouseUp() {
@@ -70,7 +83,6 @@ class MediaPlayer extends React.Component {
                             drag={this.drag}
                             mouseDown={this.mouseDown}
                             addTrackEvent={this.addTrackEvent}
-                            shouldChange={this.state.shouldChange}
                             thumbPos={this.state.thumbPos} />
 
                         <div id="times">
