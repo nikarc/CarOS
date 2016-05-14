@@ -2,13 +2,11 @@ import React from 'react';
 
 import Tabs from './Tabs';
 import SideBar from './SideBar';
-import MediaPlayer from '../services/MediaPlayer.js';
+import MediaPlayer from '../services/MediaPlayerService';
 
 const ipc = electron.ipcRenderer;
 const util = require('../util/util.js');
 const _ = require('lodash');
-
-let mediaPlayer;
 
 class Music extends React.Component {
   constructor() {
@@ -30,7 +28,7 @@ class Music extends React.Component {
     ipc.on('fetchDBResults', (event, results) => {
       let newState = Object.assign(this.state, results);
 
-      mediaPlayer = MediaPlayer(newState.songs, newState.albums, newState.artists);
+      window.mediaPlayer = new MediaPlayer(newState.songs, newState.albums, newState.artists);
 
       console.log(results);
       this.setState(newState);
@@ -63,7 +61,7 @@ class Music extends React.Component {
     this.setState(newState);
   }
   playSong(song, album) {
-    mediaPlayer.playSong(song, album);
+    window.mediaPlayer.playSong(song, album);
   }
   render() {
     let self = this;

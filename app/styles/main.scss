@@ -349,8 +349,9 @@ $transSpeed: 0.4s;
     width: 18px;
     height: 18px;
     position: absolute;
+    transform: translateX(-9px);
     top: -7px;
-    left: -9px;
+    left: 0;
     border-radius: 50%;
     background-color: white;
 

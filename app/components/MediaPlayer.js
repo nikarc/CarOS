@@ -4,7 +4,6 @@ import InputRange from './InputRange';
 
 import $ from 'jquery';
 
-var count = 1;
 
 class MediaPlayer extends React.Component {
     constructor() {
@@ -12,9 +11,11 @@ class MediaPlayer extends React.Component {
 
         this.state = {
             currentPosition: 1,
+            currentTime: 0,
+            newPercentage: null,
             duration: 2,
             shouldChange: false,
-            thumbPos: -9
+            thumbPos: null
         };
 
         this.mouseDown = this.mouseDown.bind(this);
@@ -22,12 +23,20 @@ class MediaPlayer extends React.Component {
         this.drag = this.drag.bind(this);
     }
     componentWillMount() {
-        ee.addListener('position', (currentPosition) => {
-            this.setState({currentPosition});
+        ee.addListener('position', (currentTime) => {
+            let percentage = (currentTime / this.state.duration) * 100;
+            this.setState({
+                currentTime: currentTime,
+                currentPosition: percentage + '%'
+            });
         });
 
         ee.addListener('duration', (duration) => {
             this.setState({duration});
+        });
+
+        ee.addListener('timeScrubbed', (currentTime) => {
+           this.setState({currentTime});
         });
     }
     time(timeInSeconds) {
@@ -47,6 +56,8 @@ class MediaPlayer extends React.Component {
             let width = $('#track').width();
 
             let pos = e.pageX - offset.left;
+            let percentage = (pos / width) * 100;
+            console.log(percentage);
             if (pos < -9) {
                 this.setState({
                     thumbPos: '-9px'
@@ -57,13 +68,26 @@ class MediaPlayer extends React.Component {
                 });
             } else {
                 this.setState({
-                    thumbPos: pos + 'px'
+                    thumbPos: percentage + '%'
                 });
             }
+
+            this.setState({
+                newPercentage: percentage
+            });
         }
     }
     mouseUp() {
         this.state.shouldChange = false;
+        window.mediaPlayer.scrub(this.state.thumbPos);
+
+        let time = Math.round(this.state.duration * (parseInt(this.state.thumbPos) * 0.01));
+        console.log(time);
+        this.setState({
+                currentTime: time,
+                currentPosition: this.state.newPercentage + '%'
+            });
+        this.state.thumbPos = null;
     }
     addTrackEvent() {
         let player = document.getElementById('mediaPlayer');
@@ -85,10 +109,11 @@ class MediaPlayer extends React.Component {
                             drag={this.drag}
                             mouseDown={this.mouseDown}
                             addTrackEvent={this.addTrackEvent}
-                            thumbPos={this.state.thumbPos} />
+                            thumbPos={this.state.thumbPos}
+                            currentPosition={this.state.currentPosition} />
 
                         <div id="times">
-                            <div id="current-time">{this.time(this.state.currentPosition)}</div>
+                            <div id="current-time">{this.time(this.state.currentTime)}</div>
                             <div id="end-time">{this.time(this.state.duration)}</div>
                         </div>
                     </div>
@@ -100,4 +125,5 @@ class MediaPlayer extends React.Component {
 
 export default MediaPlayer;
 
+// goes on scrubber
 // {this.props.playing ? 'playing' : ''}
