@@ -32,10 +32,9 @@ class Home extends React.Component {
       timeInterval: interval
     });
 
-    ee.addListener('playing', () => {
-      console.log('song playing');
+    ee.addListener('playing', (playing) => {
       self.setState({
-        playing: true
+        playing: playing
       });
     });
   }

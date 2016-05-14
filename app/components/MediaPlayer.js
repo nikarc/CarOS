@@ -15,12 +15,17 @@ class MediaPlayer extends React.Component {
             newPercentage: null,
             duration: 2,
             shouldChange: false,
-            thumbPos: null
+            thumbPos: null,
+            playing: false
         };
 
         this.mouseDown = this.mouseDown.bind(this);
         this.mouseUp = this.mouseUp.bind(this);
         this.drag = this.drag.bind(this);
+        this.play = this.play.bind(this);
+        this.pause = this.pause.bind(this);
+        this.previous = this.previous.bind(this);
+        this.next = this.next.bind(this);
     }
     componentWillMount() {
         ee.addListener('position', (currentTime) => {
@@ -38,6 +43,10 @@ class MediaPlayer extends React.Component {
         ee.addListener('timeScrubbed', (currentTime) => {
            this.setState({currentTime});
         });
+
+        ee.addListener('playing', (playing) => {
+           this.setState({playing});
+        });
     }
     time(timeInSeconds) {
         let seconds = Math.floor(timeInSeconds % 60);
@@ -48,16 +57,12 @@ class MediaPlayer extends React.Component {
         this.state.shouldChange = true;
     }
     drag(e) {
-        // TODO: 
-        // * figure out the time in seconds relative to thumb position in div
-        // * pass time to media player to change position in song
         if (this.state.shouldChange) {
             let offset = $('#track').offset();
             let width = $('#track').width();
 
             let pos = e.pageX - offset.left;
             let percentage = (pos / width) * 100;
-            console.log(percentage);
             if (pos < -9) {
                 this.setState({
                     thumbPos: '-9px'
@@ -77,12 +82,12 @@ class MediaPlayer extends React.Component {
             });
         }
     }
-    mouseUp() {
+    mouseUp(e) {
+        console.log(e.target.parentNode);
         this.state.shouldChange = false;
         window.mediaPlayer.scrub(this.state.thumbPos);
 
         let time = Math.round(this.state.duration * (parseInt(this.state.thumbPos) * 0.01));
-        console.log(time);
         this.setState({
                 currentTime: time,
                 currentPosition: this.state.newPercentage + '%'
@@ -93,17 +98,35 @@ class MediaPlayer extends React.Component {
         let player = document.getElementById('mediaPlayer');
         player.addEventListener('mousemove', this.drag, false);
     }
+    play() {
+        window.mediaPlayer.play();
+        this.setState({
+            playing: true
+        });
+    }
+    pause() {
+        window.mediaPlayer.pause();
+        this.setState({
+            playing: false
+        });
+    }
+    previous() {
+        window.mediaPlayer.previous();
+    }
+    next() {
+        window.mediaPlayer.next();
+    }
     render() {
         return (
-            <div id="mediaPlayer" className={this.props.playing ? 'playing' : ''} onMouseUp={this.mouseUp}>
+            <div id="mediaPlayer" className={this.props.playing ? 'playing' : ''}>
                 <div id="controls">
                     <div id="buttons">
-                        <i className="fa fa-backward"></i>
-                        <i className="fa fa-play" style={this.props.playing ? {display: 'none'} : {}}></i>
-                        <i className="fa fa-pause" style={this.props.playing ? {} : {display: 'none'}}></i>
-                        <i className="fa fa-forward"></i>
+                        <i className="fa fa-backward" onClick={this.previous}></i>
+                        <i className="fa fa-play" style={this.state.playing ? {display: 'none'} : {}} onClick={this.play}></i>
+                        <i className="fa fa-pause" style={this.state.playing ? {} : {display: 'none'}} onClick={this.pause}></i>
+                        <i className="fa fa-forward" onClick={this.next}></i>
                     </div>
-                    <div id="scrubber">
+                    <div id="scrubber" onMouseUp={this.mouseUp}>
                         <InputRange 
                             mouseUp={this.mouseUp}
                             drag={this.drag}

@@ -11,13 +11,14 @@ class MediaPlayerService {
             title: '',
             artist: '',
             length: 0,
-            currentPos: 0
+            currentPos: 0,
+            playing: false
         };
         this.song = null;
         this.songList = [] ;
     }
     positionCounter() {
-        if (this.songData.length > 0 && this.songData.currentPos !== this.songData.length) {
+        if (this.songData.length > 0 && this.songData.currentPos !== this.songData.length && this.songData.playing) {
             this.songData.currentPos++;
             ee.emitEvent('position', [this.songData.currentPos]);
 
@@ -27,18 +28,25 @@ class MediaPlayerService {
         }
     }
     play() {
+        this.songData.playing = true;
         this.song.play();
 
-        ee.emitEvent('playing');
+        ee.emitEvent('playing', [true]);
     }
     pause() {
-
+        this.song.pause();
+        this.songData.playing = false;
+    }
+    stop() {
+        ee.emitEvent('playing', [false]);
     }
     next() {
-
+        let index = this.song.track ? this.song.track : _.findIndex(this.songList, (sl) => {  return sl.title === this.songData.title; }) + 1;
+        this.playSong(this.songList[index]);
     }
     previous() {
-
+        let index = this.song.track ? this.song.track - 2 : _.findIndex(this.songList, (sl) => {  return sl.title === this.songData.title; }) - 1;
+        this.playSong(this.songList[index]);
     }
     scrub(pos) {
         this.song.currentTime = this.songData.currentPos = Math.round(this.songData.length * (parseInt(pos) * 0.01));
@@ -46,10 +54,12 @@ class MediaPlayerService {
         ee.emitEvent('timeScrubbed', [this.song.currentTime]);
     }
     playSong(song, album) {
+        console.log(song);
         this.song = new Audio(song.path);
         this.song.addEventListener('loadedmetadata', () => {
             this.songData = Object.assign(this.songData, song);
             this.songData.length = Math.floor(this.song.duration);
+            this.songData.track = song.track;
             ee.emitEvent('duration', [this.songData.length]);
 
             this.positionCounter();
@@ -57,12 +67,11 @@ class MediaPlayerService {
 
         this.play();
 
-        // need to filter by array of songs from album ^
-        this.songList = _.filter(_.sortBy(this.media.songs.slice(song.track), (sort) => { return sort.attributes.track; }), (s) => {
-           return s.attributes.album_id === album.id; 
-        });
-
-        // console.log(this.songList);
+        if (album) {
+            this.songList = _.filter(_.sortBy(this.media.songs, (sort) => { return sort.attributes.track; }), (s) => {
+               return s.attributes.album_id === album.id; 
+            });
+        }
     }
 }
 

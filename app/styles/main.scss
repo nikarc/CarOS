@@ -296,6 +296,10 @@ $transSpeed: 0.4s;
       margin-right: 18px;
     }*/
 
+    &.fa:active {
+      background-color: rgba(black, 0.5);
+    }
+
     &.fa-play, &.fa-pause {
       font-size: 24px;
       border-right: 1px solid rgba(white, 0.5);
