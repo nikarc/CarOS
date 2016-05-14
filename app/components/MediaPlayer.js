@@ -95,7 +95,7 @@ class MediaPlayer extends React.Component {
     }
     render() {
         return (
-            <div id="mediaPlayer" className="playing" onMouseUp={this.mouseUp}>
+            <div id="mediaPlayer" className={this.props.playing ? 'playing' : ''} onMouseUp={this.mouseUp}>
                 <div id="controls">
                     <div id="buttons">
                         <i className="fa fa-backward"></i>
