@@ -21,15 +21,6 @@ class MediaPlayerService {
     }
     positionCounter() {
         if (this.songData.length > 0 && this.songData.currentPos !== this.songData.length && this.songData.playing) {
-            // this.songData.currentPos++;
-            // ee.emitEvent('position', [this.songData.currentPos]);
-            // count++;
-            // console.log(count);
-
-            // setTimeout(() => {
-            //     return this.positionCounter(); 
-            // }, 1000);
-
             this.interval = setInterval(() => {
                 this.songData.currentPos++;
                 ee.emitEvent('position', [this.songData.currentPos]);
@@ -37,7 +28,6 @@ class MediaPlayerService {
         }
     }
     stopPositionCounter() {
-        this.songData.currentPos = 0;
         clearInterval(this.interval);
         this.interval = null;
     }
@@ -45,11 +35,14 @@ class MediaPlayerService {
         this.songData.playing = true;
         this.song.play();
 
+        this.positionCounter();
+
         ee.emitEvent('playing', [true]);
     }
     pause() {
         this.song.pause();
         this.songData.playing = false;
+        this.stopPositionCounter();
     }
     stop() {
         ee.emitEvent('playing', [false]);

@@ -29,6 +29,7 @@ class MediaPlayer extends React.Component {
     }
     componentWillMount() {
         ee.addListener('position', (currentTime) => {
+            console.log(currentTime);
             let percentage = (currentTime / this.state.duration) * 100;
             this.setState({
                 currentTime: currentTime,
@@ -119,6 +120,7 @@ class MediaPlayer extends React.Component {
     render() {
         return (
             <div id="mediaPlayer" className={this.props.playing ? 'playing' : ''}>
+                <div className="accent" style={{width: this.state.currentPosition}}></div>
                 <div id="controls">
                     <div id="buttons">
                         <i className="fa fa-backward" onClick={this.previous}></i>
