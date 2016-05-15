@@ -1,4 +1,5 @@
 const _ = require('lodash');
+let count = 0;
 
 class MediaPlayerService {
     constructor(songs, albums, artists) {
@@ -16,16 +17,29 @@ class MediaPlayerService {
         };
         this.song = null;
         this.songList = [] ;
+        this.interval = null;
     }
     positionCounter() {
         if (this.songData.length > 0 && this.songData.currentPos !== this.songData.length && this.songData.playing) {
-            this.songData.currentPos++;
-            ee.emitEvent('position', [this.songData.currentPos]);
+            // this.songData.currentPos++;
+            // ee.emitEvent('position', [this.songData.currentPos]);
+            // count++;
+            // console.log(count);
 
-            setTimeout(() => {
-                return this.positionCounter(); 
+            // setTimeout(() => {
+            //     return this.positionCounter(); 
+            // }, 1000);
+
+            this.interval = setInterval(() => {
+                this.songData.currentPos++;
+                ee.emitEvent('position', [this.songData.currentPos]);
             }, 1000);
         }
+    }
+    stopPositionCounter() {
+        this.songData.currentPos = 0;
+        clearInterval(this.interval);
+        this.interval = null;
     }
     play() {
         this.songData.playing = true;
@@ -39,14 +53,17 @@ class MediaPlayerService {
     }
     stop() {
         ee.emitEvent('playing', [false]);
+        this.stopPositionCounter();
     }
     next() {
-        let index = this.song.track ? this.song.track : _.findIndex(this.songList, (sl) => {  return sl.title === this.songData.title; }) + 1;
-        this.playSong(this.songList[index]);
+        let index = _.findIndex(this.songList, (sl) => {  return sl.attributes.title === this.songData.title; }) + 1;
+        this.stopPositionCounter();
+        this.playSong(this.songList[index].attributes);
     }
     previous() {
-        let index = this.song.track ? this.song.track - 2 : _.findIndex(this.songList, (sl) => {  return sl.title === this.songData.title; }) - 1;
-        this.playSong(this.songList[index]);
+        let index = _.findIndex(this.songList, (sl) => {  return sl.attributes.title === this.songData.title; }) - 1;
+        this.stopPositionCounter();
+        this.playSong(this.songList[index].attributes);
     }
     scrub(pos) {
         this.song.currentTime = this.songData.currentPos = Math.round(this.songData.length * (parseInt(pos) * 0.01));
@@ -54,8 +71,13 @@ class MediaPlayerService {
         ee.emitEvent('timeScrubbed', [this.song.currentTime]);
     }
     playSong(song, album) {
-        console.log(song);
-        this.song = new Audio(song.path);
+
+        if (!this.song) {
+            this.song = new Audio(song.path);
+        } else {
+            this.song.src = song.path;
+        }
+
         this.song.addEventListener('loadedmetadata', () => {
             this.songData = Object.assign(this.songData, song);
             this.songData.length = Math.floor(this.song.duration);
