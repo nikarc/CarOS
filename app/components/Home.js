@@ -6,6 +6,7 @@ import EventEmitter from 'wolfy87-eventemitter';
 
 import Tabs from './Tabs';
 import MenuBar from './MenuBar';
+import MediaPlayer from './MediaPlayer';
 
 const ee = new EventEmitter();
 window.ee = ee;
@@ -45,6 +46,7 @@ class Home extends React.Component {
         <MenuBar time={this.state.time} />
         {childrenWithProps}
         <Tabs playing={this.state.playing} />
+        <MediaPlayer playing={this.state.playing} />
       </div>
     );
   }

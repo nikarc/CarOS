@@ -11,6 +11,7 @@ class MediaPlayerService {
         this.songData = { 
             title: '',
             artist: '',
+            album: null,
             length: 0,
             currentPos: 0,
             playing: false
@@ -71,6 +72,10 @@ class MediaPlayerService {
             this.song.src = song.path;
         }
 
+        this.songData.artist = _.filter(this.media.artists, (a) => { return a.attributes.id === song.artist_id; })[0].attributes;
+        this.songData.album = _.filter(this.media.albums, (a) => { return a.attributes.id === song.album_id; })[0].attributes;
+        this.songData.title = song.title;
+
         this.song.addEventListener('loadedmetadata', () => {
             this.songData = Object.assign(this.songData, song);
             this.songData.length = Math.floor(this.song.duration);
@@ -79,6 +84,8 @@ class MediaPlayerService {
 
             this.positionCounter();
         });
+
+        ee.emitEvent('songData', [this.songData]);
 
         this.play();
 
@@ -91,67 +98,3 @@ class MediaPlayerService {
 }
 
 export default MediaPlayerService;
-
-// module.exports = function(songs, albums, artists) {
-//     return {
-//         media: {
-//             songs: songs,
-//             albums: albums,
-//             artists: artists
-//         },
-//         songData: { 
-//             title: '',
-//             artist: '',
-//             length: 0,
-//             currentPos: 0
-//         },
-//         song: null,
-//         songList: [],
-//         positionCounter: function() {
-//             if (this.songData.length > 0 && this.songData.currentPos !== this.songData.length) {
-//                 this.songData.currentPos++;
-//                 ee.emitEvent('position', [this.songData.currentPos]);
-
-//                 setTimeout(() => {
-//                     return this.positionCounter(); 
-//                 }, 1000);
-//             }
-//         },
-//         play: function() {
-//             this.song.play();
-
-//             ee.emitEvent('playing');
-//         },
-//         pause: function() {
-            
-//         },
-//         next: function() {
-            
-//         },
-//         previous: function() {
-            
-//         },
-//         scrub: function(pos) {
-//             this.song.currentTime = this.songData.length * pos;
-//         },
-//         playSong: function(song, album) {
-//             this.song = new Audio(song.path);
-//             this.song.addEventListener('loadedmetadata', () => {
-//                 this.songData = Object.assign(this.songData, song);
-//                 this.songData.length = Math.floor(this.song.duration);
-//                 ee.emitEvent('duration', [this.songData.length]);
-
-//                 this.positionCounter();
-//             });
-
-//             this.play();
-
-//             // need to filter by array of songs from album ^
-//             this.songList = _.filter(_.sortBy(this.media.songs.slice(song.track), (sort) => { return sort.attributes.track; }), (s) => {
-//                return s.attributes.album_id === album.id; 
-//             });
-
-//             // console.log(this.songList);
-//         }
-//     };
-// };

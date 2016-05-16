@@ -266,6 +266,30 @@ $transSpeed: 0.4s;
       }
     }
   }
+}
+
+.tab-view {
+  padding: 0 1em;
+}
+
+.back-button {
+  transition: all 0.2s;
+}
+
+#mediaPlayer {
+  transition: all $transSpeed;
+  flex-grow: 0.001;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  transform: translateY(100%);
+  z-index: 100;
+  width: 100%;
+  background-color: darken($darkGray, 2.5%);
+
+  &.playing {
+    transform: translateY(0);
+  }
 
   .accent {
     position: absolute;
@@ -278,69 +302,102 @@ $transSpeed: 0.4s;
   }
 }
 
-.tab-view {
-  padding: 0 1em;
-}
-
-.back-button {
-  transition: all 0.2s;
-}
-
-#mediaPlayer {
-  transition: $transSpeed;
-  flex-grow: 0.001;
-  position: absolute;
-  top: 0;
-  left: 0;
-  transform: translateY(-100%);
-  z-index: 100;
-  width: 100%;
-  background-color: darken($darkGray, 2.5%);
+.buttons {
+  display: inline-block;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 
   i {
-    /*height: 60px;
-    width: 60px;*/
+    height: 48px;
+    width: 48px;
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 10px;
 
     /*&:not(:last-child) {
       margin-right: 18px;
     }*/
 
     &.fa:active {
-      background-color: rgba(black, 0.5);
+      background-color: lighten($darkGray, 5%);
     }
 
     &.fa-play, &.fa-pause {
       font-size: 24px;
-      /*border-right: 1px solid rgba(white, 0.5);*/
-      /*border-left: 1px solid rgba(white, 0.5);*/
-      /*margin-right: 15px;*/
     }
-    &.fa-backward {
-      /*border-left: 1px solid rgba(white, 0.5);*/
-    }
-    &.fa-forward {
-      /*border-right: 1px solid rgba(white, 0.5);*/
-    }
-    &:not(.fa-play) {
+    &.fa-backward, &.fa-forward {
       font-size: 18px;
     }
   }
 }
 
-#controls {
+#small-player, #large-player {
   display: flex;
   align-items: center;
 }
 
-#buttons {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
+#small-player {
+  padding: 10px 2em;
+  height: 48px;
+  position: relative;
+
+  .wrap {
+    display: flex;
+    align-items: center;
+    width: 100%;
+  }
+
+  .controls, .info {
+    display: inline-block;
+  }
+
+  .controls {
+    margin-right: 1em;
+  }
+
+  .info {
+    font-size: 0.75em;
+    width: 60%;
+    position: relative;
+
+    .details {
+      display: flex;
+      justify-content: center;
+      flex-direction: column;
+    }
+
+    .current-time {
+      position: absolute;
+      top: 50%;
+      right: -10em;
+      transform: translateY(-50%);
+    }
+
+    span {
+      width: 100%;
+      text-align: center;
+    }
+
+    .small {
+      opacity: 0.5;
+    }
+  }
+}
+
+#large-player {
+
+  .controls {
+    display: flex;
+    align-items: center;
+  }
+
+  .buttons {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+  }
 }
 
 #scrubber {
@@ -398,6 +455,7 @@ $transSpeed: 0.4s;
   padding: 25px 0 0 0;
   height: calc(100% - 60px);
   overflow: hidden;
+  position: relative;
 }
 
 .view {

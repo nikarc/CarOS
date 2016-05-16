@@ -16,7 +16,6 @@ class Tabs extends React.Component {
           <Link to={'/videos'}><li><i className="fa fa-video-camera"></i><p>Videos</p></li></Link>
           <Link to={'/settings'}><li><i className="fa fa-cog"></i><p>Settings</p></li></Link>
         </ul>
-        <MediaPlayer playing={this.props.playing} />
       </div>
     );
   }

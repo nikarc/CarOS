@@ -16,7 +16,8 @@ class MediaPlayer extends React.Component {
             duration: 2,
             shouldChange: false,
             thumbPos: null,
-            playing: false
+            playing: false,
+            songData: {artist: null}
         };
 
         this.mouseDown = this.mouseDown.bind(this);
@@ -29,7 +30,6 @@ class MediaPlayer extends React.Component {
     }
     componentWillMount() {
         ee.addListener('position', (currentTime) => {
-            console.log(currentTime);
             let percentage = (currentTime / this.state.duration) * 100;
             this.setState({
                 currentTime: currentTime,
@@ -47,6 +47,11 @@ class MediaPlayer extends React.Component {
 
         ee.addListener('playing', (playing) => {
            this.setState({playing});
+        });
+
+        ee.addListener('songData', (songData) => {
+            console.log(songData);
+           this.setState({songData});
         });
     }
     time(timeInSeconds) {
@@ -118,28 +123,56 @@ class MediaPlayer extends React.Component {
         window.mediaPlayer.next();
     }
     render() {
+        let self = this;
         return (
             <div id="mediaPlayer" className={this.props.playing ? 'playing' : ''}>
-                <div className="accent" style={{width: this.state.currentPosition}}></div>
-                <div id="controls">
-                    <div id="buttons">
-                        <i className="fa fa-backward" onClick={this.previous}></i>
-                        <i className="fa fa-play" style={this.state.playing ? {display: 'none'} : {}} onClick={this.play}></i>
-                        <i className="fa fa-pause" style={this.state.playing ? {} : {display: 'none'}} onClick={this.pause}></i>
-                        <i className="fa fa-forward" onClick={this.next}></i>
+                <div id="small-player" className={this.props.playing ? 'playing' : ''}>
+                    <div className="accent" style={{width: this.state.currentPosition}}></div>
+                    <div className="wrap">
+                        <div className="controls">
+                            <div className="buttons">
+                                <i className="fa fa-backward" onClick={this.previous}></i>
+                                <i className="fa fa-play" style={this.state.playing ? {display: 'none'} : {}} onClick={this.play}></i>
+                                <i className="fa fa-pause" style={this.state.playing ? {} : {display: 'none'}} onClick={this.pause}></i>
+                                <i className="fa fa-forward" onClick={this.next}></i>
+                            </div>
+                        </div>
+                        {(function() {
+                            if (self.state.songData.artist) {
+                                return (<div className="info">
+                                            <div className="details">
+                                                <span>{self.state.songData.title}</span>
+                                                <span className="small">{self.state.songData.artist.name} &nbsp;-&nbsp; {self.state.songData.album.title}</span>
+                                            </div>
+                                            <div className="current-time">
+                                                {self.time(self.state.currentTime)}
+                                            </div>
+                                        </div>);
+                            }
+                        })()}
                     </div>
-                    <div id="scrubber" onMouseUp={this.mouseUp}>
-                        <InputRange 
-                            mouseUp={this.mouseUp}
-                            drag={this.drag}
-                            mouseDown={this.mouseDown}
-                            addTrackEvent={this.addTrackEvent}
-                            thumbPos={this.state.thumbPos}
-                            currentPosition={this.state.currentPosition} />
+                </div>
+                <div id="large-player" style={{display: 'none'}}>
+                    <div className="controls">
+                        <div className="buttons">
+                            <i className="fa fa-backward" onClick={this.previous}></i>
+                            <i className="fa fa-play" style={this.state.playing ? {display: 'none'} : {}} onClick={this.play}></i>
+                            <i className="fa fa-pause" style={this.state.playing ? {} : {display: 'none'}} onClick={this.pause}></i>
+                            <i className="fa fa-forward" onClick={this.next}></i>
+                        </div>
+                        <div id="scrubber" onMouseUp={this.mouseUp}>
+                            <InputRange 
+                                mouseUp={this.mouseUp}
+                                drag={this.drag}
+                                mouseDown={this.mouseDown}
+                                addTrackEvent={this.addTrackEvent}
+                                thumbPos={this.state.thumbPos}
+                                currentPosition={this.state.currentPosition} />
 
-                        <div id="times">
-                            <div id="current-time">{this.time(this.state.currentTime)}</div>
-                            <div id="end-time">{this.time(this.state.duration)}</div>
+                            <div id="times">
+                                <div id="current-time">{this.time(this.state.currentTime)}</div>
+                                <div id="end-time">{this.time(this.state.duration)}</div>
+                            </div>
                         </div>
                     </div>
                 </div>
