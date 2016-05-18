@@ -53,7 +53,8 @@ class Music extends React.Component {
   }
   pickMedia(newMedia) {
     this.setState({
-      media: newMedia
+      media: newMedia,
+      artistName: newMedia.name
     });
   }
   mediaGoBack() {
@@ -81,6 +82,7 @@ class Music extends React.Component {
     });
     // artist albums or single album
     let albums = _.filter(_.sortBy(this.state.albums, (a) => { return a.attributes.year; }), (al) => { return al.attributes.artist_id === self.state.media.id || al.attributes.id === self.state.media.id; }).map((album, index) => {
+      let artist = _.filter(self.state.artists, (ar) => { return ar.attributes.id === album.attributes.artist_id; });
       let songs = _.filter(_.sortBy(this.state.songs, (s) => { return s.attributes.track; }), (s) => { return s.attributes.album_id === album.attributes.id; }).map((song, songIndex) => {
         return  <li key={songIndex} onClick={this.playSong.bind(this, song.attributes, album.attributes)}>{songIndex + 1}  |  {song.attributes.title}</li>;
       });
@@ -91,7 +93,7 @@ class Music extends React.Component {
               <img src={album.attributes.image}/>
             </div>
             <div>
-              <h1>{this.state.media.name}</h1>
+              <h1>{artist[0].attributes.name}</h1>
               <h3>{album.attributes.title}</h3>
             </div>
           </div>

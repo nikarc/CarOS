@@ -70,6 +70,7 @@ class MediaPlayerService {
             this.song = new Audio(song.path);
         } else {
             this.song.src = song.path;
+            this.song.load();
         }
 
         this.songData.artist = _.filter(this.media.artists, (a) => { return a.attributes.id === song.artist_id; })[0].attributes;

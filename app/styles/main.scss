@@ -277,15 +277,13 @@ $transSpeed: 0.4s;
 }
 
 #mediaPlayer {
-  transition: all $transSpeed;
-  flex-grow: 0.001;
+  /*transition: all $transSpeed;*/
   position: absolute;
   bottom: 0;
   left: 0;
-  transform: translateY(100%);
   z-index: 100;
   width: 100%;
-  background-color: darken($darkGray, 2.5%);
+  height: 0;
 
   &.playing {
     transform: translateY(0);
@@ -332,15 +330,21 @@ $transSpeed: 0.4s;
   }
 }
 
-#small-player, #large-player {
-  display: flex;
-  align-items: center;
-}
-
 #small-player {
   padding: 10px 2em;
   height: 48px;
-  position: relative;
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  transform: translateY(100%);
+  background-color: darken($darkGray, 2.5%);
+  display: flex;
+  align-items: center;
+  transition: all $transSpeed;
+
+  &.playing {
+    transform: translateY(0);
+  }
 
   .wrap {
     display: flex;
@@ -372,6 +376,20 @@ $transSpeed: 0.4s;
       top: 50%;
       right: -10em;
       transform: translateY(-50%);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      & > * {
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .fa-arrows-alt {
+        height: 48px;
+        width: 69px;
+      }
     }
 
     span {
@@ -385,11 +403,30 @@ $transSpeed: 0.4s;
   }
 }
 
+
+
 #large-player {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1001;
+  background-color: $darkGray;
+  transform: translateY(100%);
+  /*transition: all $transSpeed;*/
+  background-color: darken($darkGray, 2.5%);
 
   .controls {
     display: flex;
     align-items: center;
+    width: 100%;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 80px;
+    background-color: darken($darkGray, 2.5%);
+    z-index: 1100;
   }
 
   .buttons {
@@ -397,6 +434,81 @@ $transSpeed: 0.4s;
     justify-content: center;
     align-items: center;
     width: 100%;
+    height: 100%;
+
+    .fa {
+      height: 100%;
+
+      &:not(.fa-play), &:not(.fa-pause) {
+        font-size: 24px;
+      }
+
+      &.fa-play, &.fa-pause {
+        font-size: 32px;
+      }
+    }
+  }
+
+  .fa-compress {
+    position: absolute;
+    top: 35px;
+    right: 35px;
+    z-index: 1100;
+    padding: 1em;
+  }
+
+  #scrubber {
+    height: 100%;
+  }
+}
+
+#album-info {
+  position: relative;
+  width: 100%;
+  height: 100%;
+
+  .background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1001;
+
+    img {
+      width: 100%;
+      -webkit-filter: blur(10px);
+    }
+  }
+
+  .info-block {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: calc(100% - 80px - 25px);
+    margin-top: 25px;
+    z-index: 1002;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+
+    img {
+      height: 80%;
+      box-shadow: 2px 4px 6px rgba(black, 0.5);
+    }
+
+    .details {
+      width: 100%;
+      margin-top: 0.5em;
+
+      span {
+        display: inline-block;
+        width: 100%;
+        text-align: center;
+      }
+    }
   }
 }
 

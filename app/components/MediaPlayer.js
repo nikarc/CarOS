@@ -17,7 +17,8 @@ class MediaPlayer extends React.Component {
             shouldChange: false,
             thumbPos: null,
             playing: false,
-            songData: {artist: null}
+            songData: {artist: null, album: null},
+            largePlayer: false
         };
 
         this.mouseDown = this.mouseDown.bind(this);
@@ -27,6 +28,7 @@ class MediaPlayer extends React.Component {
         this.pause = this.pause.bind(this);
         this.previous = this.previous.bind(this);
         this.next = this.next.bind(this);
+        this.showLargePlayer = this.showLargePlayer.bind(this);
     }
     componentWillMount() {
         ee.addListener('position', (currentTime) => {
@@ -122,10 +124,16 @@ class MediaPlayer extends React.Component {
     next() {
         window.mediaPlayer.next();
     }
+    showLargePlayer() {
+        this.setState({
+            largePlayer: !this.state.largePlayer
+        });
+    }
     render() {
         let self = this;
+        //  className={this.props.playing ? 'playing' : ''}
         return (
-            <div id="mediaPlayer" className={this.props.playing ? 'playing' : ''}>
+            <div id="mediaPlayer" style={this.state.largePlayer ? {height: '100%'} : {}}>
                 <div id="small-player" className={this.props.playing ? 'playing' : ''}>
                     <div className="accent" style={{width: this.state.currentPosition}}></div>
                     <div className="wrap">
@@ -145,14 +153,34 @@ class MediaPlayer extends React.Component {
                                                 <span className="small">{self.state.songData.artist.name} &nbsp;-&nbsp; {self.state.songData.album.title}</span>
                                             </div>
                                             <div className="current-time">
-                                                {self.time(self.state.currentTime)}
+                                                <span>{self.time(self.state.currentTime)}</span>
+                                                <i className="fa fa-arrows-alt" onClick={self.showLargePlayer}></i>
                                             </div>
                                         </div>);
                             }
                         })()}
                     </div>
                 </div>
-                <div id="large-player" style={{display: 'none'}}>
+                <div id="large-player" style={this.state.largePlayer ? {transform: 'translateY(0)'} : {display: 'none'}}>
+                    <i className="fa fa-compress" onClick={this.showLargePlayer}></i>
+                    {(function() {
+                                if (self.state.songData.album) {
+                                    return (
+                                        <div id="album-info">
+                                            <div className="background">
+                                                <img src={self.state.songData.album.image} />;
+                                            </div>
+                                            <div className="info-block">
+                                                <img src={self.state.songData.album.image} />
+                                                <div className="details">
+                                                    <span>{self.state.songData.title}</span><br/>
+                                                    <span><small>{self.state.songData.artist.name} &nbsp;-&nbsp; {self.state.songData.album.title}</small></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    );
+                                }
+                            })()}
                     <div className="controls">
                         <div className="buttons">
                             <i className="fa fa-backward" onClick={this.previous}></i>
