@@ -52,10 +52,16 @@ class Music extends React.Component {
     this.setState({context});
   }
   pickMedia(newMedia) {
-    this.setState({
-      media: newMedia,
-      artistName: newMedia.name
-    });
+    let self = this;
+    // WARN: if statement is a hack!
+    // click event on all albums -> song click is bubbling up to parent which changes media type back to 'songs'
+    // e.stopPropagation()'s not working
+    if (this.state.media.type !== 'album-songs') {
+      this.setState({
+        media: newMedia,
+        artistName: newMedia.name
+      });
+    }
   }
   mediaGoBack() {
     let newState = Object.assign(this.state.media, {type: 'artists'});

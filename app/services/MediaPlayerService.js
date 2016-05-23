@@ -21,43 +21,58 @@ class MediaPlayerService {
         this.interval = null;
     }
     positionCounter() {
+        let self = this;
         if (this.songData.length > 0 && this.songData.currentPos !== this.songData.length && this.songData.playing) {
-            this.interval = setInterval(() => {
+            self.interval = setInterval(() => {
                 this.songData.currentPos++;
                 ee.emitEvent('position', [this.songData.currentPos]);
             }, 1000);
+
+            // this.songData.currentPos++;
+            // ee.emitEvent('position', [this.songData.currentPos]);
+            // setTimeout(() => {
+            //     this.positionCounter();
+            // }, 1000);
         }
     }
-    stopPositionCounter() {
+    stopPositionCounter(reset, cb) {
         clearInterval(this.interval);
-        this.interval = null;
+        if (reset) {
+            this.songData.currentPos = 0;
+        }
+
+        if (typeof cb === 'function') {
+            return cb();
+        }
     }
     play() {
         this.songData.playing = true;
         this.song.play();
 
-        this.positionCounter();
+        // this.positionCounter();
 
         ee.emitEvent('playing', [true]);
     }
     pause() {
         this.song.pause();
         this.songData.playing = false;
-        this.stopPositionCounter();
+        this.stopPositionCounter(false);
     }
     stop() {
         ee.emitEvent('playing', [false]);
-        this.stopPositionCounter();
+        this.stopPositionCounter(true);
     }
     next() {
         let index = _.findIndex(this.songList, (sl) => {  return sl.attributes.title === this.songData.title; }) + 1;
-        this.stopPositionCounter();
-        this.playSong(this.songList[index].attributes);
+        this.stopPositionCounter(true, () => {
+           this.playSong(this.songList[index].attributes); 
+        });
     }
     previous() {
         let index = _.findIndex(this.songList, (sl) => {  return sl.attributes.title === this.songData.title; }) - 1;
-        this.stopPositionCounter();
-        this.playSong(this.songList[index].attributes);
+        this.stopPositionCounter(true, () => {
+           this.playSong(this.songList[index].attributes); 
+        });
     }
     scrub(pos) {
         this.song.currentTime = this.songData.currentPos = Math.round(this.songData.length * (parseInt(pos) * 0.01));

@@ -17,6 +17,10 @@
         "react"
     ],
     "rules": {
+        "indent": [
+            "error",
+            4
+        ],
         "linebreak-style": [
             "error",
             "unix"
@@ -28,12 +32,6 @@
         "semi": [
             "error",
             "always"
-        ],
-        "no-unused-vars": [
-            "off"
-        ],
-        "no-console": [
-            "off"
         ]
     }
 }
