@@ -811,6 +811,71 @@ $transSpeed: 0.4s;
   }
 }
 
+/* Podcasts */
+
+#podcasts {
+  width: 200%;
+
+  &.slide #podcast-detail {
+    transform: translateX(-100%);
+  }
+}
+
+#all-podcasts, #podcast-detail {
+  width: 100vw;
+  float: left;
+}
+
+#podcast-detail {
+  position: relative;
+  z-index: 2;
+  background-color: $darkGray;
+  transition: all 0.3s;
+  min-height: 100vh;
+  display: flex;
+  /*justify-content: center;*/
+  flex-direction: column;
+  align-items: center;
+
+  .back-button {
+    padding: 1em;
+    font-size: 2em;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 10;
+  }
+}
+
+.each-podcast {
+  width: calc(100% / 3);
+  float: left;
+  padding: 5px 0;
+
+  img {
+    width: 100%;
+  }
+
+  .details {
+    padding: 5px 0;
+    background-color: $lightBlue;
+  }
+
+  p {
+    text-align: center;
+  }
+}
+
+.chosen-details {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  img {
+    width: 25%;
+  }
+}
+
 
 .clearfix::after {
   content: "";

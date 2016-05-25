@@ -21,6 +21,9 @@ class Music extends React.Component {
         this.changeContext = this.changeContext.bind(this);
         this.mediaGoBack = this.mediaGoBack.bind(this);
     }
+    componentWillMount() {
+        this.props.fetchDB.call(this, 'music');
+    }
     componentWillReceiveProps(nextProps) {
         if (nextProps.artists || nextProps.albums || nextProps.songs) {
             this.setState({

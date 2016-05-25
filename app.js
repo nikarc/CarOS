@@ -24,105 +24,105 @@ var config = require(configPath);
 
 // Quit when all windows are closed.
 app.on('window-all-closed', function() {
-  // On OS X it is common for applications and their menu bar
-  // to stay active until the user quits explicitly with Cmd + Q
-  if (process.platform != 'darwin') {
-    app.quit();
-  }
+    // On OS X it is common for applications and their menu bar
+    // to stay active until the user quits explicitly with Cmd + Q
+    if (process.platform != 'darwin') {
+        app.quit();
+    }
 });
 
-// This method will be called when Electron has finished
-// initialization and is ready to create browser windows.
+    // This method will be called when Electron has finished
+    // initialization and is ready to create browser windows.
 app.on('ready', function() {
-  // Create the browser window.
-  if (process.platform !== 'linux') {
-    mainWindow = new BrowserWindow({
-      width: 800,
-      height: 600
-    });
+    // Create the browser window.
+    if (process.platform !== 'linux') {
+        mainWindow = new BrowserWindow({
+            width: 800,
+            height: 600
+        });
 
-    // check if config file
-    fs.access(configPath, fs.F_OK, (err) => {
-      if (err) {
-        console.log(chalk.yellow('No config file, creating now...'));
-        let config = {
-          files: {
-            music: [],
-            podcasts: [],
-            videos: []
-          },
-          database: {
-            is_setup: false
-          }
+        // check if config file
+        fs.access(configPath, fs.F_OK, (err) => {
+            if (err) {
+                console.log(chalk.yellow('No config file, creating now...'));
+                let config = {
+                    files: {
+                        music: [],
+                        podcasts: [],
+                        videos: []
+                    },
+                    database: {
+                        is_setup: false
+                    }
+                };
+
+                fs.writeFile(configPath, JSON.stringify(config, null, 4), (err) => {
+                    if (err) return console.error(err);
+
+                    config = require(configPath);
+                });
+            } else {
+                config = require(configPath);
+            }
+        });
+
+        mainWindow.webContents.openDevTools();
+        mainWindow.loadURL(`file://${__dirname}/public/dev.html`);
+    } else {
+        mainWindow = new BrowserWindow({
+            width: 800,
+            height: 600,
+            kiosk: true
+        });
+
+        mainWindow.loadURL(`file://${__dirname}/public/index.html`);
+    }
+
+    ipc.on('showOpenDialog', (event, context) => {
+        let defaultPath = `~/${context[0].toUpperCase()}${context.slice(1)}`;
+        let filters = {
+            music: [{ name: 'Music', extensions: ['mp3', 'ogg', 'wav'] }],
+            videos: [{ name: 'Video', extensions: ['mp4', 'webm', 'ogv'] }],
+            podcasts: [{ name: 'Podcast', extensions: ['mp3', 'ogg', 'wav'] }]
         };
 
-        fs.writeFile(configPath, JSON.stringify(config, null, 4), (err) => {
-          if (err) return console.error(err);
-
-          config = require(configPath);
-        });
-      } else {
-        config = require(configPath);
-      }
-    });
-
-    mainWindow.webContents.openDevTools();
-    mainWindow.loadURL(`file://${__dirname}/public/dev.html`);
-  } else {
-    mainWindow = new BrowserWindow({
-      width: 800,
-      height: 600,
-      kiosk: true
-    });
-
-    mainWindow.loadURL(`file://${__dirname}/public/index.html`);
-  }
-
-  ipc.on('showOpenDialog', (event, context) => {
-    let defaultPath = `~/${context[0].toUpperCase()}${context.slice(1)}`;
-    let filters = {
-      music: [{ name: 'Music', extensions: ['mp3', 'ogg', 'wav'] }],
-      videos: [{ name: 'Video', extensions: ['mp4', 'webm', 'ogv'] }],
-      podcasts: [{ name: 'Podcast', extensions: ['mp3', 'ogg', 'wav'] }]
-    };
-
-    dialog.showOpenDialog(mainWindow, {
-      title: 'Where are your files located?',
-      defaultPath: defaultPath,
-      filters: filters[context],
-      properties: [
-        'openDirectory',
-        'multiSelections'
-      ]
-    }, (filePaths) => {
-      files.updateUserSettings(filePaths, context)
-        .then((done) => {
-          event.sender.send('gotFilePaths', done);
-        }).catch((err) => {
-          if (err) console.error(chalk.red('updateUserSettings error: ', err));
+        dialog.showOpenDialog(mainWindow, {
+            title: 'Where are your files located?',
+            defaultPath: defaultPath,
+            filters: filters[context],
+            properties: [
+                'openDirectory',
+                'multiSelections'
+            ]
+        }, (filePaths) => {
+            files.updateUserSettings(filePaths, context)
+            .then((done) => {
+                event.sender.send('gotFilePaths', done);
+            }).catch((err) => {
+                if (err) console.error(chalk.red('updateUserSettings error: ', err));
+            });
         });
     });
-  });
 
-  ipc.on('saveSettings', (event, updateDB) => {
-    if (updateDB) {
-      files.updateDB(event);
-    }
-  });
+    ipc.on('saveSettings', (event, updateDB) => {
+        if (updateDB) {
+            files.updateDB(event);
+        }
+    });
 
-  ipc.on('fetchDB', (event, arg) => {
-    db.fetchDB(event, arg);
-  });
+    ipc.on('fetchDB', (event, arg) => {
+        db.fetchDB(event, arg);
+    });
 
-  // Emitted when the window is closed.
-  mainWindow.on('closed', function() {
-    // Dereference the window object, usually you would store windows
-    // in an array if your app supports multi windows, this is the time
-    // when you should delete the corresponding element.
-    mainWindow = null;
-  });
+    // Emitted when the window is closed.
+    mainWindow.on('closed', function() {
+        // Dereference the window object, usually you would store windows
+        // in an array if your app supports multi windows, this is the time
+        // when you should delete the corresponding element.
+        mainWindow = null;
+    });
 
-  process.on('uncaughtException', function (error) {
-    console.error(chalk.red(error));
-  });
+    process.on('uncaughtException', function (error) {
+        console.error(chalk.red(error));
+    });
 });

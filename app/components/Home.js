@@ -27,9 +27,13 @@ class Home extends React.Component {
             timeInterval: null,
             playing: false
         };
+
+        this.fetchDB = this.fetchDB.bind(this);
     }
-    componentWillMount() {
-        ipc.send('fetchDB', 'music');
+    fetchDB(context) {
+        console.log(context);
+        let self = this;
+        ipc.send('fetchDB', context);
         ipc.on('fetchDBResults', (event, results) => {
             let newState = Object.assign(this.state, results);
 
@@ -38,7 +42,6 @@ class Home extends React.Component {
             this.setState(newState);
         });
 
-        let self = this;
         let interval = setInterval(() => {
             this.setState({
                 time: moment().format('MMM Do YY - hh:mm a')
@@ -60,7 +63,8 @@ class Home extends React.Component {
             time: this.state.time,
             artists: this.state.artists,
             albums: this.state.albums,
-            songs: this.state.songs
+            songs: this.state.songs,
+            fetchDB: this.fetchDB
         }));
         return (
                 <div id="home">
