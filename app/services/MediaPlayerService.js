@@ -88,6 +88,10 @@ class MediaPlayerService {
             this.song.load();
         }
 
+        if (!this.album) {
+            this.songList = this.songs;
+        }
+
         this.songData.artist = _.filter(this.media.artists, (a) => { return a.attributes.id === song.artist_id; })[0].attributes;
         this.songData.album = _.filter(this.media.albums, (a) => { return a.attributes.id === song.album_id; })[0].attributes;
         this.songData.title = song.title;
