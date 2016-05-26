@@ -1,5 +1,4 @@
 const _ = require('lodash');
-let count = 0;
 
 class MediaPlayerService {
     constructor(songs, albums, artists) {
@@ -65,13 +64,13 @@ class MediaPlayerService {
     next() {
         let index = _.findIndex(this.songList, (sl) => {  return sl.attributes.title === this.songData.title; }) + 1;
         this.stopPositionCounter(true, () => {
-           this.playSong(this.songList[index].attributes); 
+            this.playSong(this.songList[index].attributes); 
         });
     }
     previous() {
         let index = _.findIndex(this.songList, (sl) => {  return sl.attributes.title === this.songData.title; }) - 1;
         this.stopPositionCounter(true, () => {
-           this.playSong(this.songList[index].attributes); 
+            this.playSong(this.songList[index].attributes); 
         });
     }
     scrub(pos) {

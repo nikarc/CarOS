@@ -870,9 +870,23 @@ $transSpeed: 0.4s;
   display: flex;
   flex-direction: column;
   align-items: center;
+  padding: 50px 0;
+  background-color: darken($darkGray, 10%);
 
   img {
     width: 25%;
+    margin-bottom: 10px;
+  }
+}
+
+#podcast-list {
+  list-style: none;
+
+  li {
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid lighten($darkGray, 5%);
+    padding: 10px 1em;
   }
 }
 
