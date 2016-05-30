@@ -79,6 +79,7 @@ class MediaPlayerService {
         ee.emitEvent('timeScrubbed', [this.song.currentTime]);
     }
     playSong(song, album) {
+        console.log(song);
 
         if (!this.song) {
             this.song = new Audio(song.path);
@@ -109,9 +110,13 @@ class MediaPlayerService {
         this.play();
 
         if (album) {
-            this.songList = _.filter(_.sortBy(this.media.songs, (sort) => { return sort.attributes.track; }), (s) => {
-               return s.attributes.album_id === album.id; 
-            });
+            if (album === 'podcasts') {
+                this.songList = _.filter(this.media.songs, (s) => {  return s.attributes.artist_id === song.artist_id; });
+            } else {
+                this.songList = _.filter(_.sortBy(this.media.songs, (sort) => { return sort.attributes.track; }), (s) => {
+                    return s.attributes.album_id === album.id;
+                });
+            }
         }
     }
 }

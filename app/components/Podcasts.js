@@ -46,7 +46,7 @@ class Podcasts extends React.Component {
         }, 300);
     }
     playSong(podcast) {
-        window.mediaPlayer.playSong(podcast, 'podcasts');
+        window.mediaPlayer.playSong(podcast.attributes, 'podcasts');
     }
     render() {
         let self = this;
@@ -77,7 +77,7 @@ class Podcasts extends React.Component {
                                 let podcasts = _.filter(self.state.songs, (s) => {  return s.attributes.artist_id === self.state.currentPodcast.artist.attributes.id; });
                                 let list = podcasts.map((p, index) => {
                                     return (
-                                        <li key={index} onClick={this.playSong.bind(this, p)}>{index} - {p.attributes.title}</li>
+                                        <li key={index} onClick={this.playSong.bind(this, p)}>{index + 1} - {p.attributes.title}</li>
                                     );
                                 });
                                 return (
