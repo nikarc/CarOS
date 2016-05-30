@@ -1,4 +1,5 @@
 const _ = require('lodash');
+const ipc = electron.ipcRenderer;
 
 class MediaPlayerService {
     constructor(songs, albums, artists) {
@@ -13,7 +14,9 @@ class MediaPlayerService {
             album: null,
             length: 0,
             currentPos: 0,
-            playing: false
+            playing: false,
+            mediaType: '',
+            id: null
         };
         this.song = null;
         this.songList = [] ;
@@ -53,6 +56,10 @@ class MediaPlayerService {
         ee.emitEvent('playing', [true]);
     }
     pause() {
+        if (this.songData.mediaType === 'podcasts') {
+            ipc.send('savePlace', {pos: this.songData.currentPos, song: this.songData});
+        }
+
         this.song.pause();
         this.songData.playing = false;
         this.stopPositionCounter(false);
@@ -92,9 +99,16 @@ class MediaPlayerService {
             this.songList = this.songs;
         }
 
+        this.songData.id = song.id;
         this.songData.artist = _.filter(this.media.artists, (a) => { return a.attributes.id === song.artist_id; })[0].attributes;
         this.songData.album = _.filter(this.media.albums, (a) => { return a.attributes.id === song.album_id; })[0].attributes;
         this.songData.title = song.title;
+        this.songData.mediaType = song.mediaType;
+
+        if (song.currentPos) {
+            this.song.currentTime = song.currentPos;
+        }
+
 
         this.song.addEventListener('loadedmetadata', () => {
             this.songData = Object.assign(this.songData, song);
