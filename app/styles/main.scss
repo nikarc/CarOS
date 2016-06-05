@@ -79,6 +79,11 @@ h1,h2,h3,h4,h5 {
   font-weight: 200;
 }
 
+.active {
+  background: linear-gradient(to top, rgba(#444, 0.2), rgba(#444, 0.8));
+  background-color: -webkit-linear-gradient(to top, rgba(black, 0.8), rgba(black, 0.2));
+}
+
 $loadingCube: 15px;
 
 @mixin rotateAnimation($dir) {
