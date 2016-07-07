@@ -17,7 +17,8 @@ Built using [Electron](http://electron.atom.io/) and [React](https://facebook.gi
 
 ### How To Develop
 
-Install npm
+Install npm dependencies
+
 `$~ npm install`
 
 Run Webpack and Start Electron
